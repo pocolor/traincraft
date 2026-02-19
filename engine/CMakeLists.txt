@@ -32,7 +32,4 @@ target_link_libraries(native_engine PRIVATE
 )
 
 # easier includes
-target_include_directories(native_engine PRIVATE
-        include
-        include/jni
-)
+target_include_directories(native_engine PRIVATE include)
