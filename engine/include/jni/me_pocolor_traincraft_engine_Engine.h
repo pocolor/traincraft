@@ -9,10 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     me_pocolor_traincraft_engine_Engine
- * Method:    test
+ * Method:    run
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_me_pocolor_traincraft_engine_Engine_test
+JNIEXPORT void JNICALL Java_me_pocolor_traincraft_engine_Engine_run
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus
