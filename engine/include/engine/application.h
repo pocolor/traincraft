@@ -9,20 +9,22 @@
 
 class Application {
 public:
-    Application();
-    ~Application();
+    Application() = delete;
 
-    void run();
-    void stop() { m_Running = false; }
+    static void init();
+    static void shutdown();
 
-    void onEvent(Event& event);
+    static void run();
+    static void stop() { s_Running = false; }
 
-    LayerStack& getLayerStack() { return m_LayerStack; }
+    static void onEvent(Event& event);
+
+    static LayerStack& getLayerStack() { return s_LayerStack; }
 
 private:
-    bool onWindowClose(WindowCloseEvent& e);
+    static bool onWindowClose(WindowCloseEvent& e);
 
-    std::unique_ptr<Window> m_Window;
-    LayerStack m_LayerStack;
-    bool m_Running;
+    static std::unique_ptr<Window> s_Window;
+    static LayerStack s_LayerStack;
+    static bool s_Running;
 };

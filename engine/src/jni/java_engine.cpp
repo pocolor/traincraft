@@ -3,6 +3,7 @@
 
 JNIEXPORT void JNICALL
 Java_me_pocolor_traincraft_engine_Engine_run(JNIEnv *, jobject) {
-    Application application;
-    application.run();
+    Application::init();
+    Application::run();
+    Application::shutdown();
 }

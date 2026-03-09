@@ -14,5 +14,8 @@ public:
     static float getMouseX();
     static float getMouseY();
 
-    static void setWindow(GLFWwindow* window);
+    static void setWindow(GLFWwindow* window) { s_Window = window; }
+
+private:
+    static GLFWwindow* s_Window;
 };

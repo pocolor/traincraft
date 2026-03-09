@@ -2,7 +2,7 @@
 
 #include "engine/input/mouse_codes.h"
 
-static GLFWwindow* s_Window;
+GLFWwindow* Input::s_Window;
 
 bool Input::isKeyPressed(const int key) {
     // GLFW_RELEASE is 0
@@ -45,8 +45,4 @@ float Input::getMouseY() {
     double x, y;
     glfwGetCursorPos(s_Window, &x, &y);
     return (float) y;
-}
-
-void Input::setWindow(GLFWwindow *window) {
-    s_Window = window;
 }
