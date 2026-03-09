@@ -3,31 +3,33 @@
 #include "engine/input/input.h"
 #include "engine/tmp.h"
 
-#define BIND_EVENT_FN(fn) std::bind(&Application::fn, this, std::placeholders::_1)
+std::unique_ptr<Window> Application::s_Window;
+LayerStack Application::s_LayerStack;
+bool Application::s_Running;
 
-Application::Application() {
+void Application::init() {
     Window::initGLFW();
 
-    m_Window = std::make_unique<Window>();
+    s_Window = std::make_unique<Window>();
 
-    m_Window->setTitle("RailCraft");
-    m_Window->setEventCallback(BIND_EVENT_FN(onEvent));
+    s_Window->setTitle("RailCraft");
+    s_Window->setEventCallback(onEvent);
 
-    Input::setWindow(m_Window->getNativeWindow());
+    Input::setWindow(s_Window->getNativeWindow());
 }
 
-Application::~Application() {
-    m_Window.reset();
+void Application::shutdown() {
+    s_Window.reset();
     Window::terminateGLFW();
 }
 
 void Application::run() {
-    m_Running = true;
-    while (m_Running) {
-        for (const auto& layer : m_LayerStack)
+    s_Running = true;
+    while (s_Running) {
+        for (const auto& layer : s_LayerStack)
             layer->onUpdate();
 
-        m_Window->onUpdate();
+        s_Window->onUpdate();
     }
 }
 
@@ -35,9 +37,9 @@ void Application::onEvent(Event& event) {
     TMP::log(event.toString());
 
     EventDispatcher dispatcher(event);
-    dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(onWindowClose));
+    dispatcher.dispatch<WindowCloseEvent>(onWindowClose);
 
-    for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
+    for (auto it = s_LayerStack.end(); it != s_LayerStack.begin();) {
         (*--it)->onEvent(event);
         if (event.isHandled()) break;
     }
