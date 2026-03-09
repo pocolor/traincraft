@@ -5,16 +5,14 @@
 #include "engine/event/key_event.h"
 #include "engine/event/mouse_event.h"
 
+#include <glad/glad.h>
+#include <cassert>
+
 static void glfwErrorCallback(int error_code, const char* description) {
     TMP::logError("GLFW error: code=", error_code, ", description=", description);
 }
 
-Window::Window(const WindowData& data) : m_Data(data) {
-    const int success = glfwInit();
-    TMP::assert(success, "Failed to initialize glfw.");
-
-    glfwSetErrorCallback(glfwErrorCallback);
-
+Window::Window() {
     m_Window = glfwCreateWindow(
         m_Data.width,
         m_Data.height,
@@ -22,69 +20,81 @@ Window::Window(const WindowData& data) : m_Data(data) {
         nullptr,
         nullptr
     );
-    TMP::assert(m_Window, "Failed to create window. Title=", m_Data.title);
+    assert(m_Window);
 
     glfwMakeContextCurrent(m_Window);
+    const int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    assert(status);
     setVSync(m_Data.vSync);
 
     // glfw callbacks
     glfwSetWindowUserPointer(m_Window, &m_Data);
-#define DATA(name) WindowData& name = *(WindowData*)glfwGetWindowUserPointer(window)
-#define EVENT(event) ((WindowData*)glfwGetWindowUserPointer(window))->eventCallback(event)
+#define DATA WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window)
+#define EVENT(event) auto evnt = event;\
+    data.eventCallback(evnt)
 
     glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
-        DATA(d);
-        d.width = width;
-        d.height = height;
-        d.eventCallback(WindowResizeEvent(width, height, d.fullscreen));
+        DATA;
+        data.width = width;
+        data.height = height;
+        EVENT(WindowResizeEvent(width, height, data.fullscreen));
     });
 
     glfwSetWindowFocusCallback(m_Window, [](GLFWwindow* window, int focused) {
-        const DATA(d);
-        if (focused)
-            d.eventCallback(WindowFocusEvent());
-        else
-            d.eventCallback(WindowLostFocusEvent());
+        const DATA;
+        if (focused) {
+            EVENT(WindowFocusEvent());
+        } else {
+            EVENT(WindowLostFocusEvent());
+        }
     });
 
     glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
+        const DATA;
         EVENT(WindowCloseEvent());
     });
 
     glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        const DATA(d);
+        const DATA;
 
         switch (action) {
-            case GLFW_PRESS:
-                d.eventCallback(KeyPressedEvent(key, 0));
+            case GLFW_PRESS: {
+                EVENT(KeyPressedEvent(key));
                 break;
-            case GLFW_RELEASE:
-                d.eventCallback(KeyReleasedEvent(key));
+            }
+            case GLFW_RELEASE: {
+                EVENT(KeyReleasedEvent(key));
                 break;
-            case GLFW_REPEAT:
-                d.eventCallback(KeyPressedEvent(key, 1));
+            }
+            case GLFW_REPEAT: {
+                EVENT(KeyRepeatEvent(key));
                 break;
+            }
         }
     });
 
     glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
-        const DATA(d);
+        const DATA;
 
         switch (action) {
-            case GLFW_PRESS:
-                d.eventCallback(MouseButtonPressedEvent(button));
+            case GLFW_PRESS: {
+                EVENT(MouseButtonPressedEvent(button));
                 break;
-            case GLFW_RELEASE:
-                d.eventCallback(MouseButtonReleasedEvent(button));
+            }
+            case GLFW_RELEASE: {
+                EVENT(MouseButtonReleasedEvent(button));
                 break;
+            }
         }
     });
 
     glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
+        const DATA;
         EVENT(MouseScrolledEvent((float) xOffset, (float) yOffset));
     });
 
     glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos) {
+        const DATA;
         EVENT(MouseMovedEvent((float) xPos, (float) yPos));
     });
 
@@ -94,6 +104,16 @@ Window::Window(const WindowData& data) : m_Data(data) {
 
 Window::~Window() {
     glfwDestroyWindow(m_Window);
+}
+
+void Window::initGLFW() {
+    const int success = glfwInit();
+    assert(success);
+
+    glfwSetErrorCallback(glfwErrorCallback);
+}
+
+void Window::terminateGLFW() {
     glfwTerminate();
 }
 

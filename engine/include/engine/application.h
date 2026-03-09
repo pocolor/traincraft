@@ -1,17 +1,28 @@
 #pragma once
-#include "window.h"
+
+#include "engine/window.h"
+#include "engine/layer_stack.h"
+#include "engine/event/event.h"
+#include "engine/event/application_event.h"
+
 #include <memory>
 
 class Application {
 public:
     Application();
+    ~Application();
 
     void run();
-    void stop();
+    void stop() { m_Running = false; }
 
-    void onEvent(const Event& event);
+    void onEvent(Event& event);
+
+    LayerStack& getLayerStack() { return m_LayerStack; }
 
 private:
+    bool onWindowClose(WindowCloseEvent& e);
+
     std::unique_ptr<Window> m_Window;
-    bool m_Running = false;
+    LayerStack m_LayerStack;
+    bool m_Running;
 };

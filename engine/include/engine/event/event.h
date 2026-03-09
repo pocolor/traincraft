@@ -1,16 +1,18 @@
 #pragma once
+
+#include <cstdint>
 #include <string>
 #include <functional>
 
-enum class EventType : unsigned char {
+enum class EventType : uint8_t {
     None,
     WindowClose, WindowResize, WindowFocus, WindowLostFocus,
-    KeyPressed, KeyReleased,
+    KeyPressed, KeyRepeat, KeyReleased,
     MouseButtonPressed, MouseButtonReleased,
     MouseMoved, MouseScrolled,
 };
 
-enum class EventCategory : unsigned char {
+enum class EventCategory : uint8_t {
     None = 0,
     Application = 1 << 0,
     Input = 1 << 1,
@@ -19,30 +21,31 @@ enum class EventCategory : unsigned char {
     MouseButton = 1 << 4,
 };
 
-inline bool operator&(const unsigned char lhs, const EventCategory rhs) {
-    return lhs & (unsigned char)rhs;
+inline bool operator&(const uint8_t lhs, const EventCategory rhs) {
+    return lhs & (uint8_t)rhs;
 }
-inline bool operator&(const EventCategory lhs, const unsigned char rhs) {
-    return (unsigned char)lhs & rhs;
+inline bool operator&(const EventCategory lhs, const uint8_t rhs) {
+    return (uint8_t)lhs & rhs;
 }
 inline bool operator|(const EventCategory lhs, const EventCategory rhs) {
-    return (unsigned char)lhs | (unsigned char)rhs;
+    return (uint8_t)lhs | (uint8_t)rhs;
 }
 
 #define EVENT_CLASS_TYPE(type) static EventType getStaticType() { return EventType::type; }\
     virtual EventType getType() const override { return getStaticType(); }\
     virtual std::string getName() const override { return #type; }
 
-#define EVENT_CLASS_CATEGORY(category) virtual unsigned char getCategoryFlags() const override { return (unsigned char)(category); }
+#define EVENT_CLASS_CATEGORY(category) virtual uint8_t getCategoryFlags() const override { return (uint8_t)(category); }
 
 class Event {
     friend class EventDispatcher;
 public:
     virtual ~Event() = default;
 
+    bool isHandled() const { return m_Handled; }
     virtual EventType getType() const = 0;
     virtual std::string getName() const = 0;
-    virtual unsigned char getCategoryFlags() const = 0;
+    virtual uint8_t getCategoryFlags() const = 0;
 
     virtual std::string toString() const { return getName(); }
 
@@ -67,7 +70,7 @@ public:
         return false;
     }
 private:
-    const Event& m_Event;
+    Event& m_Event;
 };
 
-using EventCallbackFn = std::function<void(const Event&)>;
+using EventCallbackFn = std::function<void(Event&)>;

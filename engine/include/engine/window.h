@@ -33,10 +33,13 @@ struct WindowData {
 
 class Window {
 public:
-    explicit Window(const WindowData& data = WindowData());
+    Window();
     ~Window();
 
     void onUpdate() const;
+
+    static void initGLFW();
+    static void terminateGLFW();
 
     void setTitle(const std::string& title);
     void setSize(int width, int height) const;
