@@ -26,7 +26,7 @@ struct WindowData {
         vSync(vsync), eventCallback(eventCallback) {
         if (!eventCallback)
             this->eventCallback = [&](const Event&) {
-                RC_LOG_ERROR("Event callback not set on window {0}", title);
+                TC_LOG_ERROR("Event callback not set on window {0}", title);
         };
     }
 };

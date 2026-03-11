@@ -5,7 +5,7 @@
 class Layer {
 public:
     explicit Layer(const std::string& name = "Layer") : m_Name(name) {}
-    virtual ~Layer();
+    virtual ~Layer() {}
 
     virtual void onAttach() {}
     virtual void onDetach() {}

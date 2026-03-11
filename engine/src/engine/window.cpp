@@ -9,7 +9,7 @@
 #include <glad/glad.h>
 
 static void glfwErrorCallback(int error_code, const char* description) {
-    RC_LOG_ERROR("GLFW error, code={0}, description={1}", error_code, description);
+    TC_LOG_ERROR("GLFW error, code={0}, description={1}", error_code, description);
 }
 
 Window::Window() {
@@ -20,11 +20,11 @@ Window::Window() {
         nullptr,
         nullptr
     );
-    RC_ASSERT(m_Window);
+    TC_ASSERT(m_Window);
 
     glfwMakeContextCurrent(m_Window);
     const int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    RC_ASSERT(status);
+    TC_ASSERT(status);
     setVSync(m_Data.vSync);
 
     // glfw callbacks
@@ -108,7 +108,7 @@ Window::~Window() {
 
 void Window::initGLFW() {
     const int success = glfwInit();
-    RC_ASSERT(success);
+    TC_ASSERT(success);
 
     glfwSetErrorCallback(glfwErrorCallback);
 }

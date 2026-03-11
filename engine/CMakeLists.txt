@@ -10,9 +10,9 @@ add_library(engine SHARED ${engine_src})
 target_include_directories(engine PUBLIC include)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_definitions(engine PRIVATE RC_RELEASE)
+    target_compile_definitions(engine PRIVATE TC_RELEASE)
 else()
-    target_compile_definitions(engine PRIVATE RC_DEBUG)
+    target_compile_definitions(engine PRIVATE TC_DEBUG)
 endif()
 
 find_package(JNI REQUIRED)

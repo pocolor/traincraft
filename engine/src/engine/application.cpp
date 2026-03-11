@@ -36,7 +36,7 @@ void Application::run() {
 }
 
 void Application::onEvent(Event& event) {
-    RC_LOG_INFO("{0}", event.toString());
+    TC_LOG_INFO("{0}", event.toString());
 
     EventDispatcher dispatcher(event);
     dispatcher.dispatch<WindowCloseEvent>(onWindowClose);
