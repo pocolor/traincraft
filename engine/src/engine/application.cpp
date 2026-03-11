@@ -1,13 +1,15 @@
 #include "engine/application.h"
 
 #include "engine/input/input.h"
-#include "engine/tmp.h"
+
+#include "log/log.h"
 
 std::unique_ptr<Window> Application::s_Window;
 LayerStack Application::s_LayerStack;
 bool Application::s_Running;
 
 void Application::init() {
+    Log::init();
     Window::initGLFW();
 
     s_Window = std::make_unique<Window>();
@@ -34,7 +36,7 @@ void Application::run() {
 }
 
 void Application::onEvent(Event& event) {
-    TMP::log(event.toString());
+    RC_LOG_INFO("{0}", event.toString());
 
     EventDispatcher dispatcher(event);
     dispatcher.dispatch<WindowCloseEvent>(onWindowClose);

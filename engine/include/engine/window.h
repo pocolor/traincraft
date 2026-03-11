@@ -1,11 +1,11 @@
 #pragma once
+
 #include "engine/event/event.h"
+#include "log/log.h"
 
 #include <GLFW/glfw3.h>
 #include <string>
 #include <functional>
-
-#include "tmp.h"
 
 struct WindowData {
     std::string title;
@@ -26,7 +26,7 @@ struct WindowData {
         vSync(vsync), eventCallback(eventCallback) {
         if (!eventCallback)
             this->eventCallback = [&](const Event&) {
-                TMP::logError("Event callback not set on window ", title);
+                RC_LOG_ERROR("Event callback not set on window {0}", title);
         };
     }
 };

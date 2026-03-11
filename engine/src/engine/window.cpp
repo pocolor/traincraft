@@ -1,15 +1,15 @@
 #include "engine/window.h"
-#include "engine/tmp.h"
 
+#include "engine/event/event.h"
 #include "engine/event/application_event.h"
 #include "engine/event/key_event.h"
 #include "engine/event/mouse_event.h"
+#include "log/log.h"
 
 #include <glad/glad.h>
-#include <cassert>
 
 static void glfwErrorCallback(int error_code, const char* description) {
-    TMP::logError("GLFW error: code=", error_code, ", description=", description);
+    RC_LOG_ERROR("GLFW error, code={0}, description={1}", error_code, description);
 }
 
 Window::Window() {
@@ -20,11 +20,11 @@ Window::Window() {
         nullptr,
         nullptr
     );
-    assert(m_Window);
+    RC_ASSERT(m_Window);
 
     glfwMakeContextCurrent(m_Window);
     const int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    assert(status);
+    RC_ASSERT(status);
     setVSync(m_Data.vSync);
 
     // glfw callbacks
@@ -108,7 +108,7 @@ Window::~Window() {
 
 void Window::initGLFW() {
     const int success = glfwInit();
-    assert(success);
+    RC_ASSERT(success);
 
     glfwSetErrorCallback(glfwErrorCallback);
 }
